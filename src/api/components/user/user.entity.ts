@@ -1,6 +1,13 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users')
 export class User {
-    // Montar a Ordem das colunas - NATH
+    @PrimaryGeneratedColumn()
+    id!: number;
+  
+    @Column()
+    nome!: string;
+  
+    @Column()
+    email!: string;
 }

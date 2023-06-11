@@ -1,7 +1,7 @@
 import express, { Application } from 'express';
-import { initRoutes } from './api/routes';
 import logger from 'morgan';
-import { AppDataSource } from './api/config/database/mysql-datasource.config';
+import { initRoutes } from './api/routes';
+import { AppDataSource } from './config/database/mysql-datasource.config';
 
 
 export class App {

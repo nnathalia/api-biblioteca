@@ -1,18 +1,19 @@
 import { Router } from "express";
-import { UserController } from "./user.controller";
+import { EditoraController } from "./editora.controller";
 
-export class UserRoutes{
+export class EditoraRoutes{
     private router: Router = Router();
 
-    private controller: UserController;
+    private controller: EditoraController;
      
     constructor() {
-        this.controller = new UserController();
+        this.controller = new EditoraController();
         this.init();
     }
 
     private init(): void {
         this.router.get('/', this.controller.list);
+        this.router.post('/', this.controller.createEditora);
     }
 
     public routes(): Router {

@@ -1,18 +1,19 @@
 import { Router } from "express";
-import { UserController } from "./user.controller";
+import { LivroController } from "./livro.controller";
 
-export class UserRoutes{
+export class LivroRoutes{
     private router: Router = Router();
 
-    private controller: UserController;
+    private controller: LivroController;
      
     constructor() {
-        this.controller = new UserController();
+        this.controller = new LivroController();
         this.init();
     }
 
     private init(): void {
         this.router.get('/', this.controller.list);
+        this.router.post('/', this.controller.createLivro);
     }
 
     public routes(): Router {

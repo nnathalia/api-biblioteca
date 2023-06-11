@@ -10,7 +10,7 @@ export class BaseController {
     //Informações sobre API-Biblioteca
     public info(req: Request, res:Response){
         res.status(200).json({
-            name: 'API Rest - Biblioteca',
+            name: 'API Rest - Biblioteca Online',
             mode:'Development',
             version: '1.0.0',
         });

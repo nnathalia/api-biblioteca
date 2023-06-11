@@ -1,18 +1,19 @@
 import { Router } from "express";
-import { UserController } from "./user.controller";
+import { EnderecoController } from "./edereco.controller";
 
-export class UserRoutes{
+export class EnderecoRoutes{
     private router: Router = Router();
 
-    private controller: UserController;
+    private controller: EnderecoController;
      
     constructor() {
-        this.controller = new UserController();
+        this.controller = new EnderecoController();
         this.init();
     }
 
     private init(): void {
         this.router.get('/', this.controller.list);
+        this.router.post('/', this.controller.createEndereco);
     }
 
     public routes(): Router {

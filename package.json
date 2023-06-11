@@ -4,9 +4,9 @@
   "description": "Trabalho de Tópicos Essenciais em Tecnologia",
   "main": "index.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only server.ts"
   },
-
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nnathalia/api-biblioteca.git"
