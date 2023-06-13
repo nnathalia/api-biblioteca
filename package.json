@@ -23,11 +23,7 @@
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
-<<<<<<< HEAD
     "typeorm": "^0.3.15"
-=======
-    "typeorm": "^0.3.16"
->>>>>>> 34da8f59e0802b58c805303ce99644b9e8689e91
   },
   "devDependencies": {
     "@types/express": "^4.17.17",

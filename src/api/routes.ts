@@ -8,7 +8,7 @@ import { registerRoutes } from "./components";
  */
 
 export function initRoutes(router: Router): void {
-    const prefix: string = '/api-biblioteca/';
+    const prefix: string = '/api-biblioteca';
 
     registerRoutes(router, prefix)
 }
