@@ -10,7 +10,7 @@ export class EnderecoController{
         res.status(200).json({ dados: endereco });
     }
 
-    public async createEndereco(req: Request, res: Response){
+    public async create(req: Request, res: Response){
 
         let numero = req.body.numero;
         let bairro = req.body.bairro;
@@ -34,4 +34,59 @@ export class EnderecoController{
         const _endereco= await AppDataSource.manager.save(end);
         return res.status(201).json(_endereco);
     }
+
+    public async update( req: Request, res: Response){
+        const {cod} = req.params;
+
+        const endereco = await AppDataSource.manager.findOneBy(Endereco, {id: parseInt (cod)});
+
+        if(endereco == null ){
+            return res.status(404).json({ erro: 'Endereço não encontrado!'});
+        }
+
+        let {numero, bairro, cidade, estado,cep, rua, pais, complemento} = req.body;
+
+        endereco.numero = numero;
+        endereco.bairro = bairro;
+        endereco.cidade = cidade;
+        endereco.estado = estado;
+        endereco.cep = cep;
+        endereco.rua = rua;
+        endereco.pais = pais;
+        endereco.complemento = complemento;
+
+        const endereco_salvo = await AppDataSource.manager.save(endereco);
+
+        return res.json(endereco_salvo);
+     }
+
+     public async destroy(req: Request, res: Response){
+
+        const {cod} = req.params;
+
+        const endereco = await AppDataSource.manager.findOneBy(Endereco, {id: parseInt (cod)});
+
+        if(endereco == null ){
+            return res.status(404).json({ erro: 'Endereço não encontrado!'});
+        }
+
+        await AppDataSource.manager.delete(Endereco, endereco);
+
+        return res.status(204).json();
+
+     }
+
+     public async show(req: Request, res: Response){
+
+        const {cod} = req.params;
+
+        const endereco = await AppDataSource.manager.findOneBy(Endereco, {id: parseInt (cod)});
+
+        if(endereco == null ){
+            return res.status(404).json({ erro: 'Endereço não encontrado!'});
+        }
+
+        return res.json(endereco);
+
+     }
 }

@@ -7,6 +7,7 @@ import { EditoraRoutes } from './editora/editora.routes';
 import { EnderecoRoutes } from './endereco/endereco.routes';
 import { ContatoRoutes } from './contato/contato.routes'; 
 import { EmprestimoRoutes } from './emprestimo/emprestimo.routes';
+import { LivroRoutes } from './livro/livro.routes';
 
 
 /**
@@ -25,5 +26,6 @@ export function registerRoutes(router: Router, prefix: string = ''): void {
   router.use(`${prefix}/endereco`, new EnderecoRoutes().routes());
   router.use(`${prefix}/contato`, new ContatoRoutes().routes());
   router.use(`${prefix}/emprestimo`, new EmprestimoRoutes().routes());
+  router.use(`${prefix}/livro`, new LivroRoutes().routes());
 
 }

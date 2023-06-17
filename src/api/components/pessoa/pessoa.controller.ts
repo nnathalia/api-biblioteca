@@ -10,7 +10,7 @@ export class PessoaController{
         res.status(200).json({ dados: pessoa });
     }
 
-    public async createPessoa(req: Request, res: Response){
+    public async create(req: Request, res: Response){
         
         let nome = req.body.nome;
         let cpf = req.body.cpf;
@@ -32,4 +32,58 @@ export class PessoaController{
         const _pessoa = await AppDataSource.manager.save(pes);
         return res.status(201).json(_pessoa);
     }
+
+    public async update( req: Request, res: Response){
+        const {cod} = req.params;
+
+        const pessoa = await AppDataSource.manager.findOneBy(Pessoa, {id: parseInt (cod)});
+
+        if(pessoa == null ){
+            return res.status(404).json({ erro: 'Pessoa não encontrada!'});
+        }
+
+        let {nome, cpf, rg, data_nascimento, sexo, contato_id, endereco_id} = req.body;
+
+        pessoa.nome = nome;
+        pessoa.cpf = cpf;
+        pessoa.rg = rg;
+        pessoa.data_nascimento = data_nascimento;
+        pessoa.sexo = sexo;
+        pessoa.contato_id = contato_id;
+        pessoa.endereco_id = endereco_id;
+
+        const pessoa_salva = await AppDataSource.manager.save(pessoa);
+
+        return res.json(pessoa_salva);
+     }
+
+     public async destroy(req: Request, res: Response){
+
+        const {cod} = req.params;
+
+        const pessoa = await AppDataSource.manager.findOneBy(Pessoa, {id: parseInt (cod)});
+
+        if(pessoa == null ){
+            return res.status(404).json({ erro: 'Pessoa não encontrada!'});
+        }
+
+        await AppDataSource.manager.delete(Pessoa, pessoa);
+
+        return res.status(204).json();
+
+     }
+
+     public async show(req: Request, res: Response){
+
+        const {cod} = req.params;
+
+        const pessoa = await AppDataSource.manager.findOneBy(Pessoa, {id: parseInt (cod)});
+
+        if(pessoa == null ){
+            return res.status(404).json({ erro: 'Pessoa não encontrada!'});
+        }
+
+        return res.json(pessoa);
+
+     }
 }
