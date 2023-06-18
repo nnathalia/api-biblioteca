@@ -10,7 +10,7 @@ export class EditoraController{
         res.status(200).json({ dados: editora });
     }
 
-    public async createEditora(req: Request, res: Response){
+    public async create(req: Request, res: Response){
 
         let razao_social = req.body.razao_social;
         let nome_fantasia = req.body.nome_fantasia;
@@ -24,5 +24,54 @@ export class EditoraController{
         const _editora = await AppDataSource.manager.save(edit);
         return res.status(201).json(_editora);
     }
-    
+
+    public async update( req: Request, res: Response){
+        const {cod} = req.params;
+
+        const editora = await AppDataSource.manager.findOneBy(Editora, {id: parseInt (cod)});
+
+        if(editora == null ){
+            return res.status(404).json({ erro: 'Editora não encontrada!'});
+        }
+
+        let {razao_social, nome_fantasia, cnpj} = req.body;
+        
+        editora.razao_social = razao_social;
+        editora.nome_fantasia = nome_fantasia;
+        editora.cnpj = cnpj;
+
+        const editora_salva = await AppDataSource.manager.save(editora);
+
+        return res.json(editora_salva);
+     }
+
+     public async destroy(req: Request, res: Response){
+
+        const {cod} = req.params;
+
+        const editora = await AppDataSource.manager.findOneBy(Editora, {id: parseInt (cod)});
+
+        if(editora == null ){
+            return res.status(404).json({ erro: 'Editora não encontrada!'});
+        }
+
+        await AppDataSource.manager.delete(Editora, editora);
+
+        return res.status(204).json();
+
+     }
+
+     public async show(req: Request, res: Response){
+
+        const {cod} = req.params;
+
+        const editora = await AppDataSource.manager.findOneBy(Editora, {id: parseInt (cod)});
+
+        if(editora == null ){
+            return res.status(404).json({ erro: 'Editora não encontrada!'});
+        }
+
+        return res.json(editora);
+
+     }
 }

@@ -1,7 +1,6 @@
 import { Response, Request } from "express";
 import { AppDataSource } from '../../../config/database/mysql-datasource.config';
 import { Contato } from "./contato.entity";
-import { App } from "../../../app";
 
 export class ContatoController{
 
@@ -11,7 +10,7 @@ export class ContatoController{
         res.status(200).json({ dados: contato });
     }
 
-    public async createContato(req: Request, res: Response){
+    public async create(req: Request, res: Response){
         
         let rede_social = req.body.rede_social;
         let email = req.body.email;
@@ -28,42 +27,53 @@ export class ContatoController{
         return res.status(201).json(_contato);
     }
 
-   public async updateContato(req: Request, res: Request){
+    public async update( req: Request, res: Response){
+        const {cod} = req.params;
 
-    const {cod} = req.params;
+        const contato = await AppDataSource.manager.findOneBy(Contato, {id: parseInt (cod)});
 
-    const contato = await AppDataSource.manager.findOneBy(Contato, {id: parseInt(cod)});
+        if(contato == null ){
+            return res.status(404).json({ erro: 'Contato não encontrado!'});
+        }
 
-    if (contato == null){
-        return res.status(404).json({ erro: 'Contato não encontrado!' });
-    }
+        let {rede_social, email, celular, telefone} = req.body;
+        
+        contato.rede_social = rede_social;
+        contato.email = email;
+        contato.celular = celular;
+        contato.telefone = telefone;
 
-    let { rede_social, email, celular, telefone } = req.body;
+        const contato_salvo = await AppDataSource.manager.save(contato);
 
-    contato.rede_social = rede_social;
-    contato.email = email;
-    contato.celular = celular;
-    contato.telefone = telefone;
+        return res.json(contato_salvo);
+     }
 
-    const contato_salvo = await AppDataSource.manager.save(Contato);
+     public async destroy(req: Request, res: Response){
 
-    return res.status(200).json(contato_salvo);
-   } 
+        const {cod} = req.params;
 
-   //ESPACO PARA COLOCAR O DESTROY
+        const contato= await AppDataSource.manager.findOneBy(Contato, {id: parseInt (cod)});
+        
+        if(contato == null ){
+            return res.status(404).json({ erro: 'Contato não encontrado!'});
+        }
 
+        await AppDataSource.manager.delete(Contato, contato);
 
-   public async showContato(req: Request, res: Response){
-    const { cod } = req.params;
+        return res.status(204).json();
 
-    const contato = await AppDataSource.manager.findOneBy(Contato, {id: parseInt(cod)});
+     }
 
-    if (contato == null){
-        return res.status(404).json({ erro: 'Contato não encontrado, tente novamente!'});
+     public async show(req: Request, res: Response){
 
-    }
+        const {cod} = req.params;
 
-    return res.status(200).json(contato);
-   }
-   
+        const contato= await AppDataSource.manager.findOneBy(Contato, {id: parseInt (cod)});
+        if(contato == null ){
+            return res.status(404).json({ erro: 'Contato não encontrado!'});
+        }
+
+        return res.json(contato);
+
+     }
 }
