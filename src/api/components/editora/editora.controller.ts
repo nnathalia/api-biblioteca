@@ -24,4 +24,5 @@ export class EditoraController{
         const _editora = await AppDataSource.manager.save(edit);
         return res.status(201).json(_editora);
     }
+    
 }
