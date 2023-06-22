@@ -1,3 +1,4 @@
+import { validate } from 'class-validator';
 import { Response, Request } from "express";
 import { AppDataSource } from '../../../config/database/mysql-datasource.config';
 import { Contato } from "./contato.entity";
@@ -23,6 +24,12 @@ export class ContatoController{
         cont.celular = celular;
         cont.telefone = telefone;
         
+        const erros = await validate(cont);
+
+        if(erros.length > 0) {
+            return res.status(400).json(erros);
+        }
+
         const _contato = await AppDataSource.manager.save(cont);
         return res.status(201).json(_contato);
     }
@@ -67,6 +74,10 @@ export class ContatoController{
      public async show(req: Request, res: Response){
 
         const {cod} = req.params;
+
+        if(!Number.isInteger(parseInt(cod))) {
+            return res.status(400).json();
+        }
 
         const contato= await AppDataSource.manager.findOneBy(Contato, {id: parseInt (cod)});
         if(contato == null ){

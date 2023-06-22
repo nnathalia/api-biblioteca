@@ -1,3 +1,4 @@
+import { validate } from 'class-validator';
 import { Response, Request } from "express";
 import { AppDataSource } from '../../../config/database/mysql-datasource.config';
 import { Editora } from "./editora.entity";
@@ -21,6 +22,12 @@ export class EditoraController{
         edit.nome_fantasia = nome_fantasia;
         edit.cnpj = cnpj;
         
+        const erros = await validate(edit);
+
+        if(erros.length > 0) {
+            return res.status(400).json(erros);
+        }
+
         const _editora = await AppDataSource.manager.save(edit);
         return res.status(201).json(_editora);
     }
@@ -43,9 +50,9 @@ export class EditoraController{
         const editora_salva = await AppDataSource.manager.save(editora);
 
         return res.json(editora_salva);
-     }
+    }
 
-     public async destroy(req: Request, res: Response){
+    public async destroy(req: Request, res: Response){
 
         const {cod} = req.params;
 
@@ -59,11 +66,15 @@ export class EditoraController{
 
         return res.status(204).json();
 
-     }
+    }
 
-     public async show(req: Request, res: Response){
+    public async show(req: Request, res: Response){
 
         const {cod} = req.params;
+
+        if(!Number.isInteger(parseInt(cod))) {
+            return res.status(400).json();
+        }
 
         const editora = await AppDataSource.manager.findOneBy(Editora, {id: parseInt (cod)});
 
@@ -73,5 +84,5 @@ export class EditoraController{
 
         return res.json(editora);
 
-     }
+    }
 }

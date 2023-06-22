@@ -1,6 +1,10 @@
+import { validate } from 'class-validator';
 import { Response, Request } from "express";
 import { AppDataSource } from '../../../config/database/mysql-datasource.config';
 import { Pessoa } from "./pessoa.entity";
+import { Contato } from "../contato/contato.entity";
+import { Endereco } from "../endereco/endereco.entity";
+
 
 export class PessoaController{
 
@@ -20,6 +24,26 @@ export class PessoaController{
         let contato_id = req.body.contato_id;
         let endereco_id = req.body.endereco_id;
 
+        if(contato_id == undefined) {
+            return res.status(404).json({ erro: 'Contato inexistente'})
+        }
+      
+          const _contato = await AppDataSource.manager.findOneBy(Contato, { id: contato_id });
+      
+        if(_contato == null) {
+            return res.status(404).json({ erro: 'Contato inexistente'})
+        }
+
+        if(endereco_id == undefined) {
+            return res.status(404).json({ erro: 'Endereço inexistente'})
+        }
+      
+          const _cendereco = await AppDataSource.manager.findOneBy(Endereco, { id: endereco_id });
+      
+        if(_cendereco == null) {
+            return res.status(404).json({ erro: 'Endereço inexistente'})
+        }
+
         let pes = new Pessoa();
         pes.nome = nome;
         pes.cpf = cpf;
@@ -29,7 +53,14 @@ export class PessoaController{
         pes.contato_id = contato_id;
         pes.endereco_id = endereco_id;
 
+        const erros = await validate(pes);
+
+        if(erros.length > 0) {
+            return res.status(400).json(erros);
+        }
+
         const _pessoa = await AppDataSource.manager.save(pes);
+
         return res.status(201).json(_pessoa);
     }
 
@@ -77,6 +108,10 @@ export class PessoaController{
 
         const {cod} = req.params;
 
+        if(!Number.isInteger(parseInt(cod))) {
+            return res.status(400).json();
+        }
+      
         const pessoa = await AppDataSource.manager.findOneBy(Pessoa, {id: parseInt (cod)});
 
         if(pessoa == null ){

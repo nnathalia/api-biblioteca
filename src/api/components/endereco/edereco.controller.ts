@@ -1,3 +1,4 @@
+import { validate } from 'class-validator';
 import { Response, Request } from "express";
 import { AppDataSource } from '../../../config/database/mysql-datasource.config';
 import { Endereco } from "./endereco.entity";
@@ -31,7 +32,14 @@ export class EnderecoController{
         end.pais = pais;
         end.complemento = complemento;
         
-        const _endereco= await AppDataSource.manager.save(end);
+        const erros = await validate(end);
+
+        if(erros.length > 0) {
+            return res.status(400).json(erros);
+        }
+
+        const _endereco = await AppDataSource.manager.save(end);
+
         return res.status(201).json(_endereco);
     }
 
@@ -79,6 +87,10 @@ export class EnderecoController{
      public async show(req: Request, res: Response){
 
         const {cod} = req.params;
+
+        if(!Number.isInteger(parseInt(cod))) {
+            return res.status(400).json();
+        }
 
         const endereco = await AppDataSource.manager.findOneBy(Endereco, {id: parseInt (cod)});
 

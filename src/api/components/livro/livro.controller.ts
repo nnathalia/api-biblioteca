@@ -1,6 +1,8 @@
 import { validate } from 'class-validator';
 import { Response, Request } from "express";
 import { AppDataSource } from '../../../config/database/mysql-datasource.config';
+import { Autor } from '../autor/autor.entity';
+import { Editora } from '../editora/editora.entity';
 import { Livro } from "./livro.entity";
 
 export class LivroController{
@@ -22,6 +24,25 @@ export class LivroController{
         let autor_id = req.body.autor_id;
         let editora_id = req.body.editora_id;
         
+        if(autor_id == undefined){
+            return res.status(404).json({ erro: 'Autor inexistente'})
+        }
+
+        const _autor = await AppDataSource.manager.findOneBy(Autor, { id: autor_id });
+        
+        if(autor_id == null){
+            return res.status(404).json({ erro: 'Autor inexistente'})
+        }
+
+        if(editora_id == undefined){
+            return res.status(404).json({ erro: 'Editora inexistente'})
+        }
+
+        const _editora = await AppDataSource.manager.findOneBy(Editora, { id: editora_id });
+        
+        if(editora_id == null){
+            return res.status(404).json({ erro: 'Autor inexistente'})
+        }
 
         let liv = new Livro();
         liv.sinopse = sinopse;
@@ -33,11 +54,10 @@ export class LivroController{
         liv.autor_id = autor_id;
         liv.editora_id = editora_id;
 
-        
         const erros = await validate(liv);
 
         if(erros.length > 0) {
-      return res.status(400).json(erros);
+            return res.status(400).json(erros);
         }
 
         const _livro = await AppDataSource.manager.save(liv);
@@ -89,6 +109,10 @@ export class LivroController{
      public async show(req: Request, res: Response){
 
         const {cod} = req.params;
+
+        if(!Number.isInteger(parseInt(cod))) {
+            return res.status(400).json();
+          }
 
         const livro = await AppDataSource.manager.findOneBy(Livro, {id: parseInt (cod)});
 

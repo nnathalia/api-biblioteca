@@ -1,7 +1,7 @@
+import { validate } from 'class-validator';
 import { Response, Request } from "express";
 import { AppDataSource } from '../../../config/database/mysql-datasource.config';
 import { Autor } from "./autor.entity";
-import { CommandSucceededEvent } from "typeorm";
 
 export class AutorController{
 
@@ -23,6 +23,12 @@ export class AutorController{
         aut.data_nascimento = data_nascimento;
         aut.perfil = perfil;
         
+        const erros = await validate(aut);
+
+        if(erros.length > 0) {
+            return res.status(400).json(erros);
+        }
+
         const _autor = await AppDataSource.manager.save(aut);
         return res.status(201).json(_autor);
 
@@ -67,6 +73,10 @@ export class AutorController{
      public async show(req: Request, res: Response){
 
         const {cod} = req.params;
+
+        if(!Number.isInteger(parseInt(cod))) {
+            return res.status(400).json();
+        }
 
         const autor = await AppDataSource.manager.findOneBy(Autor, {id: parseInt (cod)});
 
