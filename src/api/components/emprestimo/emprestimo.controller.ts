@@ -1,6 +1,9 @@
+import { validate } from 'class-validator';
 import e, { Response, Request } from "express";
 import { AppDataSource } from '../../../config/database/mysql-datasource.config';
 import { Emprestimo } from "./emprestimo.entity";
+import { Pessoa } from "../pessoa/pessoa.entity";
+import { Livro } from"../livro/livro.entity";
 
 export class EmprestimoController{
 
@@ -19,6 +22,26 @@ export class EmprestimoController{
         let pessoa_id = req.body.pessoa_id;
         let livro_id = req.body.livro_id
 
+        if(pessoa_id == undefined) {
+            return res.status(404).json({ erro: 'Pessoa inexistente'})
+        }
+      
+        const _pessoa = await AppDataSource.manager.findOneBy(Pessoa, { id: pessoa_id });
+      
+        if(_pessoa == null) {
+            return res.status(404).json({ erro: 'Pessoa inexistente'})
+        }
+
+        if(livro_id == undefined) {
+            return res.status(404).json({ erro: 'Livro inexistente'})
+        }
+      
+        const _livro = await AppDataSource.manager.findOneBy(Livro, { id: livro_id });
+      
+        if(_livro == null) {
+            return res.status(404).json({ erro: 'Livro inexistente'})
+        }
+
         let empr = new Emprestimo();
         empr.data_hora_emprestimo = data_hora_emprestimo;
         empr.data_previsao_entrega = data_previsao_entrega;
@@ -27,7 +50,14 @@ export class EmprestimoController{
         empr.pessoa_id = pessoa_id;
         empr.livro_id = livro_id;
         
+        const erros = await validate(empr);
+
+        if(erros.length > 0) {
+            return res.status(400).json(erros);
+        }
+
         const _emprestimo = await AppDataSource.manager.save(empr);
+
         return res.status(201).json(_emprestimo);
     }
 
@@ -52,9 +82,9 @@ export class EmprestimoController{
         const emprestimo_salvo = await AppDataSource.manager.save(emprestimo);
 
         return res.json(emprestimo_salvo);
-     }
+    }
 
-     public async destroy(req: Request, res: Response){
+    public async destroy(req: Request, res: Response){
 
         const {cod} = req.params;
 
@@ -68,11 +98,15 @@ export class EmprestimoController{
 
         return res.status(204).json();
 
-     }
+    }
 
-     public async show(req: Request, res: Response){
+    public async show(req: Request, res: Response){
 
         const {cod} = req.params;
+
+        if(!Number.isInteger(parseInt(cod))) {
+            return res.status(400).json();
+        }
 
         const emprestimo = await AppDataSource.manager.findOneBy(Emprestimo, {id: parseInt (cod)});
 
@@ -82,5 +116,5 @@ export class EmprestimoController{
 
         return res.json(emprestimo);
 
-     }
+    }
 }
