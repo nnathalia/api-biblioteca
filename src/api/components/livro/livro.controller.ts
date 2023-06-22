@@ -1,3 +1,4 @@
+import { validate } from 'class-validator';
 import { Response, Request } from "express";
 import { AppDataSource } from '../../../config/database/mysql-datasource.config';
 import { Livro } from "./livro.entity";
@@ -32,8 +33,15 @@ export class LivroController{
         liv.autor_id = autor_id;
         liv.editora_id = editora_id;
 
+        
+        const erros = await validate(liv);
+
+        if(erros.length > 0) {
+      return res.status(400).json(erros);
+        }
 
         const _livro = await AppDataSource.manager.save(liv);
+
         return res.status(201).json(_livro);
     }
 
